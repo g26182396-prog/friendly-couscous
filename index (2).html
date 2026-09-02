@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For My World's Best Girlfriend - Come Back To Me</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Pinyon+Script&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #010409;
+      color: #ffffff;
+    }
+
+    /* --- BACKGROUND VIDEO SETUP --- */
+    #bgVideo {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -3;
+      filter: brightness(0.35) saturate(1.25) contrast(1.1);
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(255, 50, 110, 0.12), transparent 65%), rgba(2, 4, 10, 0.82);
+      z-index: -2;
+    }
+
+    /* Floating Music Toggle Button */
+    #musicToggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: rgba(255, 50, 120, 0.3);
+      border: 1px solid rgba(255, 150, 190, 0.6);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+      transition: 0.3s;
+    }
+    #musicToggle:hover {
+      background: rgba(255, 50, 120, 0.7);
+      transform: scale(1.05);
+    }
+
+    /* --- STAGE 0: REALISTIC RAIN, PARROT & PROCEDURAL TREE INTRO --- */
+    #scene-intro {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 25%, #0d1b2a 0%, #040810 70%, #010204 100%);
+      z-index: 200;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      transition: opacity 2s cubic-bezier(0.77, 0, 0.175, 1), visibility 2s;
+    }
+
+    #scene-intro.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .mystic-rain {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .m-drop {
+      position: absolute;
+      background: linear-gradient(transparent, rgba(125, 211, 252, 0.55));
+      width: 1.2px;
+      height: 28px;
+      opacity: 0.5;
+      animation: dropFall linear infinite;
+    }
+    @keyframes dropFall {
+      0% { transform: translateY(-35px); }
+      100% { transform: translateY(105vh); }
+    }
+
+    .earth-ground {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 85px;
+      background: linear-gradient(to top, #030c05, #081c0c);
+      border-top: 2px solid #16381a;
+      z-index: 3;
+    }
+
+    .divine-parrot {
+      position: absolute;
+      bottom: 75px;
+      left: -180px;
+      width: 75px;
+      height: 45px;
+      z-index: 6;
+      animation: parrotFlightPath 9.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+    .dp-body {
+      position: absolute;
+      width: 48px;
+      height: 26px;
+      background: #059669;
+      border-radius: 50% 40% 40% 40%;
+      top: 10px;
+      left: 10px;
+      box-shadow: inset -2px -2px 5px rgba(0,0,0,0.3);
+    }
+    .dp-wing {
+      position: absolute;
+      width: 30px;
+      height: 15px;
+      background: #34d399;
+      border-radius: 50%;
+      top: 12px;
+      left: 16px;
+      transform-origin: top center;
+      animation: wingFlap 0.2s ease-in-out infinite alternate;
+    }
+    @keyframes wingFlap {
+      0% { transform: rotate(0deg) scaleY(1); }
+      100% { transform: rotate(-35deg) scaleY(0.5); }
+    }
+    .dp-head {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: #10b981;
+      border-radius: 50%;
+      top: 4px;
+      left: 38px;
+    }
+    .dp-beak {
+      position: absolute;
+      width: 10px;
+      height: 8px;
+      background: #fbbf24;
+      clip-path: polygon(0 0, 100% 40%, 0 100%);
+      top: 9px;
+      left: 54px;
+    }
+    .divine-seed {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #f43f5e;
+      border-radius: 50%;
+      top: 12px;
+      left: 61px;
+      box-shadow: 0 0 12px #f43f5e;
+      animation: dropSeedAction 9.5s forwards;
+    }
+
+    @keyframes parrotFlightPath {
+      0% { left: -180px; bottom: 300px; transform: rotate(14deg); }
+      45% { left: 48.5vw; bottom: 120px; transform: rotate(-4deg); }
+      52% { left: 50vw; bottom: 80px; transform: rotate(0deg); }
+      60% { left: 53vw; bottom: 110px; transform: rotate(-10deg); }
+      100% { left: 110vw; bottom: 340px; transform: rotate(18deg); }
+    }
+
+    @keyframes dropSeedAction {
+      0%, 50% { opacity: 1; transform: translate(0, 0); }
+      53% { opacity: 1; transform: translate(-4px, 40px); }
+      54%, 100% { opacity: 0; }
+    }
+
+    .tree-container {
+      position: absolute;
+      bottom: 85px;
+      left: calc(50vw - 150px);
+      width: 300px;
+      height: 380px;
+      z-index: 4;
+      pointer-events: none;
+    }
+    #treeCanvas {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+
+    .intro-prompt {
+      position: absolute;
+      bottom: 12%;
+      width: 100%;
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+      letter-spacing: 3px;
+      color: #fde047;
+      opacity: 0;
+      animation: showPrompt 2s ease-in-out forwards;
+      animation-delay: 15s;
+      z-index: 20;
+      text-shadow: 0 0 20px rgba(253, 224, 71, 0.8);
+      cursor: pointer;
+    }
+    @keyframes showPrompt {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- PAGE UI TRANSITIONS --- */
+    .page {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(25px) scale(0.96);
+      transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .page.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    .content {
+      width: min(850px, 94%);
+      max-height: 88vh;
+      overflow-y: auto;
+      text-align: center;
+      padding: 45px 35px;
+      border-radius: 32px;
+      background: rgba(12, 16, 28, 0.82);
+      border: 1px solid rgba(255, 140, 180, 0.25);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), inset 0 0 40px rgba(255, 50, 120, 0.08);
+    }
+
+    .content::-webkit-scrollbar {
+      width: 6px;
+    }
+    .content::-webkit-scrollbar-thumb {
+      background: rgba(255, 105, 150, 0.5);
+      border-radius: 20px;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(28px, 4.8vw, 58px);
+      line-height: 1.15;
+      margin: 15px 0 20px;
+      background: linear-gradient(135deg, #ffffff, #ffb3c6, #ff758c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(255, 117, 140, 0.4);
+    }
+
+    h2 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(22px, 3.8vw, 38px);
+      margin-bottom: 20px;
+      color: #ffd1dc;
+    }
+
+    p {
+      font-size: clamp(16px, 2.1vw, 20px);
+      line-height: 1.8;
+      margin: 15px auto;
+      color: #e2e8f0;
+    }
+
+    .small-text, .subtitle {
+      color: #cbd5e1;
+      letter-spacing: 1px;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 15px 35px;
+      border: 1px solid rgba(255, 150, 190, 0.5);
+      border-radius: 50px;
+      background: linear-gradient(135deg, rgba(255, 50, 120, 0.4), rgba(200, 20, 80, 0.6));
+      color: white;
+      font-family: 'Cinzel', serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(255, 50, 120, 0.4);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, rgba(255, 50, 120, 0.8), rgba(230, 30, 100, 0.9));
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 15px 35px rgba(255, 50, 120, 0.7);
+    }
+
+    .seed {
+      font-size: 80px;
+      margin: 25px;
+      animation: seedPulse 2s infinite alternate;
+    }
+    @keyframes seedPulse {
+      0% { transform: scale(0.85); filter: drop-shadow(0 0 10px rgba(255,100,150,0.3)); }
+      100% { transform: scale(1.2); filter: drop-shadow(0 0 25px rgba(255,100,150,0.8)); }
+    }
+
+    .letter {
+      min-height: 230px;
+      padding: 25px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 180, 210, 0.15);
+      text-align: left;
+    }
+    #typingText {
+      white-space: pre-line;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #fce7f3;
+    }
+
+    .quote-box {
+      margin: 20px auto;
+      padding: 22px;
+      border-radius: 18px;
+      background: rgba(255, 50, 120, 0.08);
+      border-left: 4px solid #ff3366;
+    }
+
+    .promise-card {
+      padding: 30px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 150, 190, 0.2);
+    }
+
+    .big-heart, .final-heart, .memory-heart {
+      color: #ff3366;
+      font-size: 85px;
+      text-shadow: 0 0 35px #ff3366;
+      animation: heartbeat 1.2s infinite ease-in-out;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+    }
+
+    /* 3D Theatre Curtains */
+    .curtain-wrapper {
+      position: relative;
+      width: min(580px, 90%);
+      height: 260px;
+      margin: 20px auto;
+      overflow: hidden;
+      cursor: pointer;
+      border-radius: 20px;
+      background: #0a0104;
+      border: 2px solid rgba(255, 100, 150, 0.3);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+    .curtain {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background: repeating-linear-gradient(90deg, #3d0212 0px, #6e0824 35px, #2a010c 70px);
+      box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+      transition: transform 2.2s cubic-bezier(0.77, 0, 0.175, 1);
+      z-index: 2;
+    }
+    .curtain.left { left: 0; transform-origin: left; }
+    .curtain.right { right: 0; transform-origin: right; }
+    .curtain-wrapper.open .left { transform: scaleX(0); }
+    .curtain-wrapper.open .right { transform: scaleX(0); }
+    
+    .curtain-text {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 3;
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      letter-spacing: 4px;
+      color: #ffd1dc;
+      text-shadow: 0 0 15px rgba(255,100,150,0.8);
+    }
+
+    /* Award Page Styling */
+    .award-page {
+      border: 2px solid rgba(255, 215, 130, 0.6);
+      background: rgba(15, 10, 12, 0.85) !important;
+    }
+    .award-small {
+      letter-spacing: 5px;
+      font-size: 13px;
+      color: #fde047;
+      font-family: 'Cinzel', serif;
+    }
+    .award-title {
+      font-size: clamp(26px, 4.8vw, 52px);
+      background: linear-gradient(135deg, #fef08a, #ca8a04, #fef08a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .award-medal {
+      width: 95px;
+      height: 95px;
+      margin: 15px auto;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      font-size: 40px;
+      background: rgba(250, 204, 21, 0.15);
+      border: 3px solid rgba(250, 204, 21, 0.7);
+      box-shadow: 0 0 35px rgba(250, 204, 21, 0.4);
+      animation: medalFloat 3s infinite ease-in-out;
+    }
+    @keyframes medalFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .stamp {
+      display: inline-block;
+      margin: 15px auto;
+      padding: 10px 20px;
+      border: 3px solid #f43f5e;
+      color: #f43f5e;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      letter-spacing: 4px;
+      transform: rotate(-10deg) scale(0);
+      opacity: 0;
+    }
+    .stamp.show {
+      animation: stampIn .7s cubic-bezier(.17,.67,.24,1.4) forwards;
+    }
+    @keyframes stampIn {
+      0% { transform: rotate(-10deg) scale(3); opacity: 0; }
+      70% { transform: rotate(-10deg) scale(.9); opacity: 1; }
+      100% { transform: rotate(-10deg) scale(1); opacity: 1; }
+    }
+
+    /* --- PIGEON POSTMAN ANIMATION STYLES --- */
+    .pigeon-container {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 2, 8, 0.92);
+      backdrop-filter: blur(15px);
+      z-index: 500;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.8s ease;
+    }
+    .pigeon-container.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .flying-pigeon {
+      position: absolute;
+      left: -150px;
+      top: 40%;
+      width: 90px;
+      height: 60px;
+      background: #f8fafc;
+      border-radius: 50% 40% 40% 30%;
+      box-shadow: 0 0 20px rgba(255,255,255,0.4);
+      animation: pigeonFlyAcross 4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      z-index: 502;
+    }
+    .pigeon-wing {
+      position: absolute;
+      width: 50px;
+      height: 25px;
+      background: #e2e8f0;
+      border-radius: 50%;
+      top: -10px;
+      left: 20px;
+      transform-origin: bottom center;
+      animation: pigeonWingFlap 0.2s ease-in-out infinite alternate;
+    }
+    @keyframes pigeonWingFlap {
+      0% { transform: rotate(0deg) scaleY(1); }
+      100% { transform: rotate(-45deg) scaleY(0.5); }
+    }
+    .pigeon-beak {
+      position: absolute;
+      width: 12px;
+      height: 8px;
+      background: #f59e0b;
+      clip-path: polygon(0 0, 100% 40%, 0 100%);
+      top: 15px;
+      left: -10px;
+    }
+    .letter-envelope {
+      position: absolute;
+      width: 18px;
+      height: 12px;
+      background: #fff;
+      top: 20px;
+      left: -18px;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 0 8px rgba(255,255,255,0.8);
+    }
+
+    @keyframes pigeonFlyAcross {
+      0% { left: -150px; top: 60%; transform: scale(0.6) rotate(-10deg); }
+      60% { left: 45vw; top: 35%; transform: scale(1) rotate(0deg); }
+      100% { left: 50vw; top: 40%; transform: scale(1.1) rotate(0deg); }
+    }
+
+    .pigeon-message-card {
+      width: min(550px, 90%);
+      background: rgba(20, 12, 22, 0.95);
+      border: 2px solid #ff4d6d;
+      border-radius: 24px;
+      padding: 35px;
+      text-align: center;
+      box-shadow: 0 0 50px rgba(255, 77, 109, 0.4);
+      transform: scale(0.5);
+      opacity: 0;
+      transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 503;
+    }
+    .pigeon-container.active .pigeon-message-card {
+      transform: scale(1);
+      opacity: 1;
+      transition-delay: 3.5s;
+    }
+
+    .floating-hearts {
+      color: #ff3366;
+      font-size: 26px;
+      letter-spacing: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .content { padding: 25px 15px; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Audio Control & Background Music -->
+  <audio id="bgMusic" loop>
+    <source src="music.mp3" type="audio/mp3">
+  </audio>
+  <button id="musicToggle" onclick="toggleMusic()">🎵 Play Music</button>
+
+  <!-- STAGE 0: REALISTIC RAIN, PARROT & PROCEDURAL CANVAS TREE -->
+  <div id="scene-intro" onclick="dismissIntro()">
+    <div class="mystic-rain" id="rainLayer"></div>
+    <div class="earth-ground"></div>
+
+    <div class="divine-parrot">
+      <div class="dp-body"></div>
+      <div class="dp-wing"></div>
+      <div class="dp-head"></div>
+      <div class="dp-beak"></div>
+      <div class="divine-seed"></div>
+    </div>
+
+    <div class="tree-container">
+      <canvas id="treeCanvas" width="300" height="380"></canvas>
+    </div>
+
+    <div class="intro-prompt">✨ A tree of trust blooms for you... Tap anywhere to enter ✨</div>
+  </div>
+
+  <!-- PIGEON POSTMAN OVERLAY (Triggers after Award Acceptance) -->
+  <div class="pigeon-container" id="pigeonModal">
+    <div class="flying-pigeon" id="flyingPigeon">
+      <div class="pigeon-wing"></div>
+      <div class="pigeon-beak"></div>
+      <div class="letter-envelope"></div>
+    </div>
+    <div class="pigeon-message-card">
+      <h2 style="font-family:'Pinyon Script',cursive; font-size: 3rem; color: #ff85a1; margin-bottom: 15px;">A Message From My Heart</h2>
+      <p style="font-size: 1.2rem; color: #fff; line-height: 1.8;">
+        Come back to me, baby.<br>
+        I am eagerly waiting for you.<br>
+        <span style="color: #fde047; font-weight: 600;">Onna padikkalam, nalla exam write pannalam...</span><br>
+        Ini sanda poda vena, please baby! 🥺❤️
+      </p>
+      <button onclick="closePigeonPost()" style="margin-top: 25px;">Keep In My Heart Forever</button>
+    </div>
+  </div>
+
+  <!-- Background Video Setup -->
+  <video id="bgVideo" autoplay muted loop playsinline>
+    <source src="background.mp4" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+
+  <!-- PAGE 1 -->
+  <section class="page active" id="page1">
+    <div class="content">
+      <p class="small-text">A cinematic love experience designed just for you</p>
+      <h1>For The Girl Who Means<br>The Entire Universe To Me</h1>
+      <p class="subtitle">You thought I doubted you, but the truth is... I trust you beyond the limits of this world.</p>
+      <button onclick="nextPage()">Begin Our Story</button>
+    </div>
+  </section>
+
+  <!-- PAGE 2 -->
+  <section class="page" id="page2">
+    <div class="content">
+      <h2>How Everything Blossomed</h2>
+      <p>Every legendary love story starts with a single tiny seed planted in faithful ground.</p>
+      <div class="seed">🌱</div>
+      <p class="message">Even through misunderstandings or tests, genuine trust grows deep, strong, and unbreakable.</p>
+      <button onclick="nextPage()">Let It Grow</button>
+    </div>
+  </section>
+
+  <!-- PAGE 3: DEDICATED TREE PAGE -->
+  <section class="page" id="page3">
+    <div class="content">
+      <h2>Rooted In Eternal Belief</h2>
+      <div style="width: 220px; height: 220px; margin: 0 auto; position: relative;">
+        <canvas id="treeCanvasStatic" width="220" height="220" style="display:block; margin:0 auto;"></canvas>
+      </div>
+      <p style="margin-top: 10px;">Look at how our connection thrives. Every single branch represents an unshakeable layer of faith I hold in you.</p>
+      <button onclick="nextPage()">Continue Journey</button>
+    </div>
+  </section>
+
+  <!-- PAGE 4 -->
+  <section class="page" id="page4">
+    <div class="content">
+      <h2>A Letter Written From My Heart</h2>
+      <div class="letter">
+        <p id="typingText"></p>
+      </div>
+      <button onclick="nextPage()">Read Further</button>
+    </div>
+  </section>
+
+  <!-- PAGE 5 -->
+  <section class="page" id="page5">
+    <div class="content">
+      <h2>Clearing Every Cloud</h2>
+      <p class="big-heart">♥</p>
+      <p>If my words or reaction recently made you feel misunderstood, I am deeply sorry. It was never a lack of confidence in *you*.</p>
+      <p>Your loyalty is pure gold, and my trust in you extends far beyond anything words can capture.</p>
+      <button onclick="nextPage()">Next</button>
+    </div>
+  </section>
+
+  <!-- PAGE 6 -->
+  <section class="page" id="page6">
+    <div class="content">
+      <h2>What Your Loyalty Means To Me</h2>
+      <div class="quote-box">
+        <p>“You are the most fiercely genuine, loyal soul I have ever known.”</p>
+      </div>
+      <div class="quote-box">
+        <p>“My confidence in your heart is absolute, permanent, and unconditional.”</p>
+      </div>
+      <button onclick="nextPage()">Continue</button>
+    </div>
+  </section>
+
+  <!-- PAGE 7 -->
+  <section class="page" id="page7">
+    <div class="content">
+      <h2>My Sacred Vow To You</h2>
+      <div class="promise-card">
+        <p>I promise to listen with an open heart, protect our bond fiercely, and never let temporary shadows obscure the absolute faith I have in your loyalty.</p>
+      </div>
+      <button onclick="nextPage()">I Believe In Us</button>
+    </div>
+  </section>
+
+  <!-- PAGE 8 -->
+  <section class="page" id="page8">
+    <div class="content">
+      <h2>Our Priceless Memories</h2>
+      <div class="memory">
+        <div class="memory-heart">♥</div>
+        <p>Every laugh, every silent glance, and every cherished moment reminds me how lucky I am to call you mine.</p>
+      </div>
+      <button onclick="nextPage()">Keep Going</button>
+    </div>
+  </section>
+
+  <!-- PAGE 9 -->
+  <section class="page" id="page9">
+    <div class="content">
+      <h2>A Special Theatre Awaits...</h2>
+      <div class="curtain-wrapper" onclick="openCurtain()">
+        <div class="curtain left"></div>
+        <div class="curtain right"></div>
+        <div class="curtain-text">
+          <span>TOUCH TO OPEN CURTAINS</span>
+        </div>
+      </div>
+      <p id="curtainMessage">Tap the theatre curtains to reveal your official award.</p>
+    </div>
+  </section>
+
+  <!-- PAGE 10 (AWARD SECTION -> TRIGGERS PIGEON POSTMAN) -->
+  <section class="page" id="page10">
+    <div class="content award-page">
+      <p class="award-small">OFFICIALLY PRESENTED WITH ALL MY DEVOTION</p>
+      <h1 class="award-title">WORLD'S MOST LOYAL<br>GIRLFRIEND</h1>
+      <div class="award-medal">★</div>
+      <h2 style="font-size: 20px; color: #fef08a; font-family:'Cinzel',serif; margin-bottom: 8px;">THE SUPREME TRUST CERTIFICATE</h2>
+      <p style="font-size: 0.95rem;">Awarded permanently for possessing unmatched loyalty, a radiant heart, and being the partner who holds my full trust beyond the world.</p>
+      <div class="stamp" id="stamp">VALIDATED</div>
+      <br>
+      <button onclick="giveAwardAndTriggerPigeon()">Accept Official Award & Receive Letter</button>
+      <p id="awardMessage" style="margin-top: 10px; color: #fde047;"></p>
+    </div>
+  </section>
+
+  <!-- PAGE 11 (FINAL) -->
+  <section class="page" id="page11">
+    <div class="content final-page">
+      <div class="floating-hearts">♥ ♥ ♥ ♥ ♥</div>
+      <h1>Forever My Queen ❤️</h1>
+      <p style="margin-top: 15px; font-weight: 600; color: #ffd1dc; font-family:'Cinzel',serif; font-size: 1.1rem;">
+        Thank you for reading our story. My heart belongs entirely to you.
+      </p>
+      <div class="final-heart" style="margin: 20px auto; font-size: 65px;">♥</div>
+      <button onclick="restartStory()">Replay Our Story</button>
+    </div>
+  </section>
+
+  <script>
+    // Music Toggle Setup
+    let isPlaying = false;
+    const bgMusic = document.getElementById("bgMusic");
+    const musicBtn = document.getElementById("musicToggle");
+
+    function toggleMusic() {
+      if (!isPlaying) {
+        bgMusic.play().then(() => {
+          isPlaying = true;
+          musicBtn.textContent = "🔊 Pause Music";
+        }).catch(e => console.log("Audio play blocked", e));
+      } else {
+        bgMusic.pause();
+        isPlaying = false;
+        musicBtn.textContent = "🎵 Play Music";
+      }
+    }
+
+    // Also auto-play music and video smoothly on first screen tap
+    function dismissIntro() {
+      if (!isPlaying) {
+        bgMusic.play().then(() => {
+          isPlaying = true;
+          musicBtn.textContent = "🔊 Pause Music";
+        }).catch(err => {});
+      }
+      document.getElementById('scene-intro').classList.add('hidden');
+      
+      // Ensure background video forces play on interaction
+      const vid = document.getElementById('bgVideo');
+      if(vid) vid.play().catch(e => {});
+    }
+
+    // 1. Realistic Organic Fractal Canvas Tree Generator
+    function drawRealisticTree(canvasId, progress) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      function branch(startX, startY, length, angle, depth, maxDepth) {
+        if (depth > maxDepth || progress < depth / maxDepth) return;
+
+        const endX = startX + length * Math.sin(angle);
+        const endY = startY - length * Math.cos(angle);
+
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.strokeStyle = depth === 0 ? '#3d2417' : `rgb(${30 + depth * 10}, ${20 + depth * 6}, ${10 + depth * 4})`;
+        ctx.lineWidth = Math.max(1, (maxDepth - depth + 1) * 2);
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        if (depth >= maxDepth - 2) {
+          ctx.fillStyle = '#ff3366';
+          ctx.shadowColor = '#ff3366';
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.arc(endX, endY, 5 + Math.random() * 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        } else {
+          branch(endX, endY, length * 0.75, angle - 0.38, depth + 1, maxDepth);
+          branch(endX, endY, length * 0.75, angle + 0.38, depth + 1, maxDepth);
+        }
+      }
+
+      branch(canvas.width / 2, canvas.height, canvas.height * 0.28, 0, 0, 6);
+    }
+
+    let growthProgress = 0;
+    function animateIntroTree() {
+      if (growthProgress <= 1) {
+        growthProgress += 0.008;
+        drawRealisticTree('treeCanvas', growthProgress);
+        requestAnimationFrame(animateIntroTree);
+      }
+    }
+    setTimeout(animateIntroTree, 4000);
+
+    window.addEventListener('load', () => {
+      drawRealisticTree('treeCanvasStatic', 1.0);
+    });
+
+    // 2. Mystic Rain
+    const rainLayer = document.getElementById('rainLayer');
+    for(let i = 0; i < 90; i++) {
+      const drop = document.createElement('div');
+      drop.classList.add('m-drop');
+      drop.style.left = `${Math.random() * 100}%`;
+      drop.style.top = `${Math.random() * -50}px`;
+      drop.style.animationDuration = `${0.4 + Math.random() * 0.5}s`;
+      drop.style.animationDelay = `${Math.random() * 2}s`;
+      rainLayer.appendChild(drop);
+    }
+
+    let currentPage = 1;
+    const totalPages = 11;
+    const pages = document.querySelectorAll(".page");
+
+    function showPage(number) {
+      pages.forEach(page => page.classList.remove("active"));
+      const page = document.getElementById(`page${number}`);
+      if (page) page.classList.add("active");
+      currentPage = number;
+
+      if (number === 4) {
+        startTyping();
+      }
+    }
+
+    function nextPage() {
+      if (currentPage < totalPages) {
+        showPage(currentPage + 1);
+      }
+    }
+
+    const letterText = 
+`I want you to know something straight from the depth of my soul.
+
+You might feel like I had a moment of doubt, but the actual truth is... 
+I trust you beyond this world, beyond limits, and beyond time.
+
+Your loyalty is completely crystal clear to me. 
+
+If any recent situation caused a ripple of misunderstanding, let it fade away—because my belief in you is unshakable.
+
+You are my absolute safe haven.
+
+I am sorry if I ever made you second-guess yourself, but know this for eternity:
+
+I believe in your heart completely. ♥`;
+
+    let typingStarted = false;
+    function startTyping() {
+      if (typingStarted) return;
+      typingStarted = true;
+      const element = document.getElementById("typingText");
+      let index = 0;
+      function type() {
+        if (index < letterText.length) {
+          element.textContent += letterText.charAt(index);
+          index++;
+          setTimeout(type, 26);
+        }
+      }
+      type();
+    }
+
+    function openCurtain() {
+      const wrapper = document.querySelector(".curtain-wrapper");
+      const message = document.getElementById("curtainMessage");
+      wrapper.classList.add("open");
+      message.textContent = "The velvet curtains part for your ceremony...";
+      setTimeout(() => { nextPage(); }, 2100);
+    }
+
+    // Award Stamp & Trigger Pigeon Postman Delivery
+    function giveAwardAndTriggerPigeon() {
+      const stamp = document.getElementById("stamp");
+      const message = document.getElementById("awardMessage");
+      stamp.classList.add("show");
+      message.textContent = "✓ Award officially authenticated! Look, a messenger has arrived...";
+      createCelebrationHearts();
+
+      setTimeout(() => {
+        document.getElementById("pigeonModal").classList.add("active");
+      }, 1500);
+    }
+
+    function closePigeonPost() {
+      document.getElementById("pigeonModal").classList.remove("active");
+      setTimeout(() => {
+        nextPage();
+      }, 600);
+    }
+
+    function createCelebrationHearts() {
+      for (let i = 0; i < 30; i++) {
+        const heart = document.createElement("div");
+        heart.textContent = "♥";
+        heart.style.position = "fixed";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.bottom = "-30px";
+        heart.style.fontSize = 16 + Math.random() * 25 + "px";
+        heart.style.color = "#ff3366";
+        heart.style.zIndex = "9999";
+        heart.style.pointerEvents = "none";
+        document.body.appendChild(heart);
+
+        const duration = 2500 + Math.random() * 2500;
+        heart.animate([
+          { transform: "translateY(0) scale(0.4)", opacity: 0 },
+          { transform: "translateY(-45vh) scale(1)", opacity: 1 },
+          { transform: "translateY(-110vh) scale(0.7)", opacity: 0 }
+        ], { duration: duration, easing: "ease-out" });
+
+        setTimeout(() => { heart.remove(); }, duration);
+      }
+    }
+
+    function restartStory() {
+      currentPage = 1;
+      document.getElementById("typingText").textContent = "";
+      document.getElementById("stamp").classList.remove("show");
+      typingStarted = false;
+      document.querySelector(".curtain-wrapper").classList.remove("open");
+      document.getElementById('scene-intro').classList.remove('hidden');
+      growthProgress = 0;
+      animateIntroTree();
+      showPage(1);
+    }
+
+    showPage(1);
+  </script>
+</body>
+</html>
